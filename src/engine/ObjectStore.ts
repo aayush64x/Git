@@ -1,7 +1,9 @@
+import { createBlob } from "./Blob";
+import type { GitBlob } from "./types";
+
 export async function hashObject(type: string, content : string) : Promise<string>{
   const byteLength : number = new TextEncoder().encode(content).length;
   const str = `${type} ${byteLength}\0${content}`;
-  console.log(JSON.stringify(str))
   const bytes = new TextEncoder().encode(str);
 
   const hashBuffer = await crypto.subtle.digest('SHA-1', bytes);
@@ -12,11 +14,20 @@ export async function hashObject(type: string, content : string) : Promise<strin
 
   return hex;
 }
-const storage = new Map<string, object>;
+
+
+const objects = new Map<string, object>;
 export function store (sha: string, obj: object) {
-  storage.set(sha, obj);
+  objects.set(sha, obj);
 }
 
 export function get(sha: string ){
-  return storage.get(sha);
+  return objects.get(sha);
+}
+
+export async function storeBlob(content: string) : Promise<string>{
+  const blob : GitBlob = createBlob(content);
+  const sha = await hashObject('blob', content);
+  store(sha, blob);
+  return sha; 
 }
