@@ -1,14 +1,19 @@
-import { hashObject, storeBlob, get } from './engine/ObjectStore';
+import { storeBlob, get, storeTree } from './engine/ObjectStore';
 import { useEffect } from 'react';
 
 function App() {
   useEffect(() => {
   async function test() {
-    const sha = await storeBlob("hello world")
-    console.log(sha)
-    console.log(get(sha))
+    const sha1 = await storeBlob("hello")
+    const sha2 = await storeBlob("world")
+    const treeSha = await storeTree([
+  { mode: '100644', name: 'hello.txt', sha: sha1 },
+  { mode: '100644', name: 'world.txt', sha: sha2 }
+])
+  console.log(treeSha)
   }
-  test()
+  test();
+  
 }, [])
   return (
     <>
