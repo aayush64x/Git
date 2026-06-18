@@ -1,6 +1,7 @@
 import { createBlob } from "./Blob";
+import { createCommit } from "./Commit";
 import { createTree } from "./Tree";
-import type { GitBlob, GitTree, TreeEntry } from "./types";
+import type { GitBlob, GitTree, TreeEntry, GitCommit } from "./types";
 
 export async function hashObject(type: string, content: string): Promise<string> {
   const byteLength: number = new TextEncoder().encode(content).length;
@@ -41,7 +42,7 @@ export async function storeTree(entries: TreeEntry[]): Promise<string> {
   const header = `tree ${contentBytes.length}\0`;
   const headerBytes = new TextEncoder().encode(header);
   const fullBytes = concatBytes(headerBytes, contentBytes);
-  const hashBuffer = await crypto.subtle.digest('SHA-1', fullBytes);
+  const hashBuffer = await crypto.subtle.digest('SHA-1', fullBytes.buffer as ArrayBuffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   const tree: GitTree = createTree(entries);
@@ -73,4 +74,20 @@ function mergeUint8Arrays(arrays: Uint8Array[]): Uint8Array {
     offset += arr.length;
   }
   return result;
+}
+
+
+export async function storeCommit(
+  treeSha: string,
+  parentShas: string[],
+  message: string,
+  author: string
+): Promise<string> {
+  const timeStamp = Date.now();
+  const parentLines = parentShas.map(sha => `parent ${sha}\n`).join('')
+  const content = `tree ${treeSha}\n${parentLines}author ${author} ${timeStamp}\ncommitter ${author} ${timeStamp}\n\n${message}`
+  const commit: GitCommit = createCommit(treeSha, parentShas, message, author, timeStamp);
+  const commitHash = await hashObject('commit', content);
+  store(commitHash, commit);
+  return commitHash;
 }
