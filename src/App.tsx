@@ -1,37 +1,20 @@
-import { storeBlob, get, storeTree, storeCommit } from "./engine/ObjectStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GitRepo } from "./engine/GitRepo";
+import Terminal from "./components/Terminal";
 
 function App() {
-  useEffect(() => {
-    async function test() {
-      const blobSha = await storeBlob("hello world");
-      const treeSha = await storeTree([
-        { mode: "100644", name: "hello.txt", sha: blobSha },
-      ]);
-      const commitSha = await storeCommit(
-        treeSha,
-        [],
-        "initial commit",
-        "Aayush",
-      );
-      console.log("commit sha:", commitSha);
-      console.log("commit object:", get(commitSha));
-      const repo = new GitRepo();
-      await repo.init();
-      await repo.add("hello.txt", "hello world");
-      await repo.commit("initial commit", "Aayush");
-      await repo.add("hello.txt", "updated");
-      await repo.commit("second commit", "Aayush");
-      const commits = await repo.log();
-      console.log(commits);
-    }
-    test();
-  }, []);
-
+  const [repo] = useState(() => new GitRepo());
+  const [selectedSha, setSelectedSha] = useState("");
+  const [graph, setGraph] = useState({nodes : [], edges : []});
+  const onCommand = () => {};
   return (
     <>
-      <h1>Hello World</h1>
+      <div className="terminal">
+       <Terminal repo={repo}  onCommand={onCommand} />
+       <h1>Terminal</h1>
+      </div>
+      <div className="graph"></div>
+      <div className="object-inspector"></div>
     </>
   );
 }
