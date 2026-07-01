@@ -1,7 +1,7 @@
 import { createBlob } from "./Blob";
 import { createCommit } from "./Commit";
 import { createTree } from "./Tree";
-import type { GitBlob, GitTree, TreeEntry, GitCommit } from "./types";
+import type { GitBlob, GitTree, TreeEntry, GitCommit, GitEdge } from "./types";
 
 export async function hashObject(type: string, content: string): Promise<string> {
   const byteLength: number = new TextEncoder().encode(content).length;
@@ -90,4 +90,21 @@ export async function storeCommit(
   const commitHash = await hashObject('commit', content);
   store(commitHash, commit);
   return commitHash;
+}
+
+export function getDepth(sha : string, edges: GitEdge[]): number{
+  let parent : string|null = sha; 
+  let depth : number = 0; 
+  while (parent !== null){
+    for(const{from, to} of edges){
+      if (from === parent){
+        parent = to; 
+        depth +=1 ; 
+      }
+      else{
+        parent = null; 
+      }
+    }
+  }
+  return depth; 
 }
