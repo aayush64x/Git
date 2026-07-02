@@ -1,7 +1,7 @@
 import { createBlob } from "./Blob";
 import { createCommit } from "./Commit";
 import { createTree } from "./Tree";
-import type { GitBlob, GitTree, TreeEntry, GitCommit, GitEdge } from "./types";
+import type { GitBlob, GitTree, TreeEntry, GitCommit, GitEdge, GitNode } from "./types";
 
 export async function hashObject(type: string, content: string): Promise<string> {
   const byteLength: number = new TextEncoder().encode(content).length;
@@ -96,15 +96,27 @@ export function getDepth(sha : string, edges: GitEdge[]): number{
   let parent : string|null = sha; 
   let depth : number = 0; 
   while (parent !== null){
+    let found = false;
     for(const{from, to} of edges){
       if (from === parent){
         parent = to; 
         depth +=1 ; 
-      }
-      else{
-        parent = null; 
+        found = true; 
       }
     }
+    if (!found) parent = null; 
   }
   return depth; 
+}
+
+export function getPosition(nodes: GitNode[], edges: GitEdge[]) : Map<string, {x: number, y: number}>{
+  const map = new Map(); 
+  for(const node of nodes){
+    const depth = getDepth(node.sha, edges); 
+    const y = depth * 120; 
+    const x = depth * 150;
+    map.set(node.sha, {x, y});
+  }
+
+  return map; 
 }

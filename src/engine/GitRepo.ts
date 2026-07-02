@@ -3,7 +3,7 @@ import { storeBlob, storeTree, storeCommit, get } from "./ObjectStore";
 import type { GitCommit, TreeEntry, GitNode, GitEdge } from "./types";
 
 export class GitRepo {
-  private refs: RefStore;
+  public refs: RefStore;
   private index: TreeEntry[]; // staging area for now, just a list of entries
 
   constructor() {
@@ -12,6 +12,7 @@ export class GitRepo {
   }
 
   async init(): Promise<void> {}
+
   async add(name: string, content: string): Promise<void> {
     const sha = await storeBlob(content);
     this.index.push({ mode: "100644", name, sha });
@@ -46,9 +47,11 @@ export class GitRepo {
   }
 
   getGraph(): { nodes: GitNode[]; edges: GitEdge[] } {
+    
     const nodes: GitNode[] = [];
     const edges: GitEdge[] = [];
-    const allBranches: Map<string, string> = this.refs.getAllBranches();
+    const allBranches: Map<string, string> = this.refs.getBranchMap();
+    if (allBranches.size === 0) return { nodes: [], edges: [] };
     const visited = new Set<string>();
     for (const [branchName, headSha] of allBranches) {
       const stack: string[] = [headSha];

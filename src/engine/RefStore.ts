@@ -23,4 +23,7 @@ export class RefStore{
   getCurrentBranch(): string{
     return this.Head;
   }
+  getBranchMap(): Map<string, string>{
+    return this.refs; 
+  }
 }
