@@ -8,7 +8,7 @@ interface DagProps {
 const DagView = ({ nodes, edges, onSelectNode }: DagProps) => {
   const positions = getPosition(nodes, edges);
   return (
-    <div className="h-screen bg-[#1e2633] border-l border-gray-800 flex flex-col shadow-2xl">
+    <div className="h-[calc(100vh-3.5rem)] bg-[#1e2633] border-l border-gray-800 flex flex-col shadow-2xl">
       <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-800">
         <span className="ml-3 text-sm text-white font-medium">DAG View</span>
       </div>
@@ -61,7 +61,7 @@ const DagView = ({ nodes, edges, onSelectNode }: DagProps) => {
               </text>
               <text
                 x={pos.x}
-                y={pos.y + 50}
+                y={pos.y + 55}
                 textAnchor="middle"
                 fill="#4ADE80"
                 fontSize="11"

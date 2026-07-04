@@ -10,7 +10,7 @@ const Inspector = ({ selectedSha }: InspectorProps) => {
 
   if (!selectedSha || !commit) {
     return (
-      <div className="flex h-full flex-col  border border-zinc-700 bg-zinc-900 shadow-lg">
+      <div className="flex h-[calc(100vh-3.5rem)] flex-col border border-zinc-700 bg-zinc-900 shadow-lg">
         {/* Header */}
         <div className="border-b border-zinc-700 bg-zinc-950 px-4 py-3">
           <h2 className="text-sm font-semibold text-zinc-200">

@@ -17,8 +17,23 @@ function App() {
     setGraph(repo.getGraph());
   };
 
+  const onClicked = async () => {
+    await repo.add("README.md", "# My Project");
+    await repo.commit("initial commit", "Aayush");
+    await repo.branch("feature");
+    await repo.checkout("feature");
+    await repo.add("login.ts", "export function login() {}");
+    await repo.commit("add login feature", "Aayush");
+    await repo.add("auth.ts", "export function auth() {}");
+    await repo.commit("add auth", "Aayush");
+    await repo.checkout("main");
+    await repo.add("hotfix.ts", "export function fix() {}");
+    await repo.commit("hotfix", "Aayush");
+    onCommand();
+  };
   return (
     <>
+      <Navbar onClicked={onClicked} />
       <div className="grid grid-cols-3 gap-0">
         <div>
           <Terminal repo={repo} onCommand={onCommand} />

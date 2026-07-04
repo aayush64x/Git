@@ -50,7 +50,7 @@ const Terminal = ({ repo, onCommand }: TerminalProps) => {
   };
 
   return (
-    <div className="h-screen bg-[#0d1117] border-l border-gray-800 flex flex-col shadow-2xl">
+    <div className="h-[calc(100vh-3.5rem)] bg-[#0d1117] border-l border-gray-800 flex flex-col shadow-2xl">
       <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-800 bg-[#161b22]">
         <span className="ml-3 text-sm text-gray-400 font-medium">
           Git Terminal
