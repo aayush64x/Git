@@ -53,7 +53,7 @@ export class GitRepo {
     const allBranches: Map<string, string> = this.refs.getBranchMap();
     if (allBranches.size === 0) return { nodes: [], edges: [] };
     const visited = new Set<string>();
-    for (const [branchName, headSha] of allBranches) {
+    for (const [_branchName, headSha] of allBranches) {
       const stack: string[] = [headSha];
       while (stack.length > 0) {
         const sha = stack.pop()!;

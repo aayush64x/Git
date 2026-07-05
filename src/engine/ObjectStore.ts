@@ -1,15 +1,23 @@
 import { createBlob } from "./Blob";
 import { createCommit } from "./Commit";
 import { createTree } from "./Tree";
-import type { GitBlob, GitTree, TreeEntry, GitCommit, GitEdge, GitNode } from "./types";
+import type {
+  GitBlob,
+  GitTree,
+  TreeEntry,
+  GitCommit,
+} from "./types";
 
-export async function hashObject(type: string, content: string): Promise<string> {
+export async function hashObject(
+  type: string,
+  content: string,
+): Promise<string> {
   const byteLength: number = new TextEncoder().encode(content).length;
   const str = `${type} ${byteLength}\0${content}`;
   const bytes = new TextEncoder().encode(str);
-  const hashBuffer = await crypto.subtle.digest('SHA-1', bytes);
+  const hashBuffer = await crypto.subtle.digest("SHA-1", bytes);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 const objects = new Map<string, object>();
@@ -24,7 +32,7 @@ export function get(sha: string) {
 
 export async function storeBlob(content: string): Promise<string> {
   const blob: GitBlob = createBlob(content);
-  const sha = await hashObject('blob', content);
+  const sha = await hashObject("blob", content);
   store(sha, blob);
   return sha;
 }
@@ -42,9 +50,12 @@ export async function storeTree(entries: TreeEntry[]): Promise<string> {
   const header = `tree ${contentBytes.length}\0`;
   const headerBytes = new TextEncoder().encode(header);
   const fullBytes = concatBytes(headerBytes, contentBytes);
-  const hashBuffer = await crypto.subtle.digest('SHA-1', fullBytes.buffer as ArrayBuffer);
+  const hashBuffer = await crypto.subtle.digest(
+    "SHA-1",
+    fullBytes.buffer as ArrayBuffer,
+  );
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  const hex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   const tree: GitTree = createTree(entries);
   store(hex, tree);
   return hex;
@@ -76,47 +87,24 @@ function mergeUint8Arrays(arrays: Uint8Array[]): Uint8Array {
   return result;
 }
 
-
 export async function storeCommit(
   treeSha: string,
   parentShas: string[],
   message: string,
-  author: string
+  author: string,
 ): Promise<string> {
   const timeStamp = Date.now();
-  const parentLines = parentShas.map(sha => `parent ${sha}\n`).join('')
-  const content = `tree ${treeSha}\n${parentLines}author ${author} ${timeStamp}\ncommitter ${author} ${timeStamp}\n\n${message}`
-  const commit: GitCommit = createCommit(treeSha, parentShas, message, author, timeStamp);
-  const commitHash = await hashObject('commit', content);
+  const parentLines = parentShas.map((sha) => `parent ${sha}\n`).join("");
+  const content = `tree ${treeSha}\n${parentLines}author ${author} ${timeStamp}\ncommitter ${author} ${timeStamp}\n\n${message}`;
+  const commit: GitCommit = createCommit(
+    treeSha,
+    parentShas,
+    message,
+    author,
+    timeStamp,
+  );
+  const commitHash = await hashObject("commit", content);
   store(commitHash, commit);
   return commitHash;
 }
 
-export function getDepth(sha : string, edges: GitEdge[]): number{
-  let parent : string|null = sha; 
-  let depth : number = 0; 
-  while (parent !== null){
-    let found = false;
-    for(const{from, to} of edges){
-      if (from === parent){
-        parent = to; 
-        depth +=1 ; 
-        found = true; 
-      }
-    }
-    if (!found) parent = null; 
-  }
-  return depth; 
-}
-
-export function getPosition(nodes: GitNode[], edges: GitEdge[]) : Map<string, {x: number, y: number}>{
-  const map = new Map(); 
-  for(const node of nodes){
-    const depth = getDepth(node.sha, edges); 
-    const y = depth * 120; 
-    const x = depth * 150;
-    map.set(node.sha, {x, y});
-  }
-
-  return map; 
-}

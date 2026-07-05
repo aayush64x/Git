@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { GitRepo } from "./engine/GitRepo";
 import type { GitNode, GitEdge } from "./engine/types";
 import Terminal from "./components/Terminal";

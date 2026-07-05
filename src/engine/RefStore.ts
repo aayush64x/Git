@@ -1,7 +1,6 @@
 export class RefStore{
   private refs :Map<string, string>;
   private Head: string;
-  private detached: boolean = false; 
 
   constructor(){
     this.refs = new Map<string, string>(); 
