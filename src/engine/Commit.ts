@@ -7,6 +7,7 @@ export function createCommit(treeSha: string,
   timeStamp: number): GitCommit{
     return {
       type : "commit", 
+      sha : "",
       treeSha: treeSha,
       parentSha : parentSha,
       message : message,

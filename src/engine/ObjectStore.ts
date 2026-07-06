@@ -104,6 +104,7 @@ export async function storeCommit(
     timeStamp,
   );
   const commitHash = await hashObject("commit", content);
+  commit.sha = commitHash;
   store(commitHash, commit);
   return commitHash;
 }

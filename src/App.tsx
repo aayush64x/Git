@@ -19,16 +19,16 @@ function App() {
 
   const onClicked = async () => {
     await repo.add("README.md", "# My Project");
-    await repo.commit("initial commit", "Aayush");
+    await repo.commit("initial commit", "User");
     await repo.branch("feature");
     await repo.checkout("feature");
     await repo.add("login.ts", "export function login() {}");
-    await repo.commit("add login feature", "Aayush");
+    await repo.commit("add login feature", "User");
     await repo.add("auth.ts", "export function auth() {}");
-    await repo.commit("add auth", "Aayush");
+    await repo.commit("add auth", "User");
     await repo.checkout("main");
     await repo.add("hotfix.ts", "export function fix() {}");
-    await repo.commit("hotfix", "Aayush");
+    await repo.commit("hotfix", "User");
     onCommand();
   };
   return (
