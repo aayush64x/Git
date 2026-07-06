@@ -16,6 +16,7 @@ export interface TreeEntry{
 
 export interface GitCommit {
   type: 'commit'
+  sha: string, 
   treeSha: string
   parentSha: string[]
   message: string 
